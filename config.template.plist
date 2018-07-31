@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ACPI</key>
+	<dict>
+		<key>DSDT</key>
+		<dict>
+			<key>Debug</key>
+			<true/>
+			<key>Patches</key>
+			<array>
+
+				<!-- See https://www.tonymacx86.com/threads/guide-10-11-usb-changes-and-solutions.173616/ -->
+				<dict>
+					<key>Comment</key>
+					<string>Change EHC1 to EH01</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					RUhDMQ==
+					</data>
+					<key>Replace</key>
+					<data>
+					RUgwMQ==
+					</data>
+				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>Change EHC2 to EH02</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					RUhDMg==
+					</data>
+					<key>Replace</key>
+					<data>
+					RUgwMg==
+					</data>
+				</dict>
+
+				<!-- Not needed -->
+				<dict>
+					<key>Comment</key>
+					<string>Change GFX0 to IGPU</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					R0ZYMA==
+					</data>
+					<key>Replace</key>
+					<data>
+					SUdQVQ==
+					</data>
+				</dict>
+
+				<!-- Not needed -->
+				<dict>
+					<key>Comment</key>
+					<string>Change SAT0 to SATA</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					U0FUMA==
+					</data>
+					<key>Replace</key>
+					<data>
+					U0FUQQ==
+					</data>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+
+	<key>Boot</key>
+	<dict>
+		<key>Arguments</key>
+		<!--
+			dart=0 bypasses VT-d which is not supported by macOS
+			debug=0x100 prevents the computer from rebooting if you encounter a kernel panic
+		-->
+		<string>-v dart=0 debug=0x100</string>
+		<key>Debug</key>
+		<true/>
+		<key>DefaultVolume</key>
+		<string>LastBootedVolume</string>
+		<key>Timeout</key>
+		<integer>5</integer>
+	</dict>
+
+	<key>Devices</key>
+	<dict>
+		<!-- Needed by https://github.com/acidanthera/AppleALC -->
+		<key>Audio</key>
+		<dict>
+			<key>Inject</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+
+	<key>KernelAndKextPatches</key>
+	<dict>
+		<key>Debug</key>
+		<true/>
+	</dict>
+
+	<key>RtVariables</key>
+	<dict>
+		<!--
+			System Integrity Protection (SIP): https://en.wikipedia.org/wiki/System_Integrity_Protection
+			See https://clover-wiki.zetam.org/Configuration/RtVariables#rtvariables_csractiveconfig
+			-  0x0: SIP enabled (default)
+			-  0x3: SIP partially disabled (loads unsigned kexts)
+			- 0x67: SIP completely disabled
+		-->
+		<key>CsrActiveConfig</key>
+		<string>0x3</string>
+
+		<key>MLB</key>
+		<string>00000000000000000</string>
+		<key>ROM</key>
+		<string>UseMacAddr0</string>
+	</dict>
+
+	<!--
+		See https://www.reddit.com/r/hackintosh/comments/3bjxhl/dual_boot_issue_noob_question/csn8nfd/
+	-->
+	<key>SMBIOS</key>
+	<dict>
+		<key>ProductName</key>
+		<string>iMac13,2</string>
+		<key>SerialNumber</key>
+		<string>000000000000</string>
+		<key>SmUUID</key>
+		<string>00000000-0000-0000-0000-000000000000</string>
+	</dict>
+
+	<key>SystemParameters</key>
+	<dict>
+		<!-- Inject kexts from the EFI/CLOVER/kexts, otherwise they will be ignored -->
+		<key>InjectKexts</key>
+		<string>Yes</string>
+		<key>InjectSystemID</key>
+		<true/>
+		<key>NoCaches</key>
+		<true/>
+	</dict>
+</dict>
+</plist>

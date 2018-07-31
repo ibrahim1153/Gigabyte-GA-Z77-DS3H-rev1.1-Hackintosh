@@ -1,7 +1,6 @@
 # Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh
 
-Hackintosh for [Gigabyte GA-Z77-DS3H rev1.1](http://www.gigabyte.com/products/product-page.aspx?pid=4326) motherboard using OS X 10.10 Yosemite.  
-This is a minimal guide that fits my hardware configuration.
+Hackintosh for [Gigabyte GA-Z77-DS3H rev1.1](http://www.gigabyte.com/products/product-page.aspx?pid=4326) motherboard using OS X 10.10 Yosemite.
 
 [Intel Z77 chipset](https://ark.intel.com/products/64024), [LGA 1155 socket](https://en.wikipedia.org/wiki/LGA_1155).  
 Supports 3rd gen. ([22 nm - Ivy Bridge](http://en.wikipedia.org/wiki/Ivy_Bridge_(microarchitecture))) and 2nd gen. ([32 nm - Sandy Bridge](http://en.wikipedia.org/wiki/Sandy_Bridge)) Intel Core CPUs.
@@ -10,15 +9,18 @@ Onboard devices:
 - Qualcomm Atheros AR8161 Gigabit Ethernet controller (DS3H rev1.0 has AR8151)
 - Realtek ALC887 audio chipset
 
-Sources:
-- [AR8161 LAN on new MoBo revisions (ga-z77-ds3h and ga-h77-ds3h, others)](http://www.tonymacx86.com/desktop-compatibility/77447-ar8161-lan-new-mobo-revisions-ga-z77-ds3h-ga-h77-ds3h-others.html)
+This is a minimal guide that fits my hardware configuration:
+- [Intel Core i7-3770 with HD Graphics 4000](https://ark.intel.com/products/65719)
+- [Nvidia GT 640](https://www.asus.com/Graphics-Cards/GT640DCSL2GD3/)
+- [802.11ac WiFi card Broadcom BCM94360CD](#10)
+- [SSD Crucial MX500](http://www.crucial.com/ProductDisplay?catalogId=10151&productId=2428501)
 
 ## BIOS Settings
 
-Latest stable BIOS: version [F9 (2012/09/27 update)](http://www.gigabyte.com/products/product-page.aspx?pid=4326#bios)
+Latest stable BIOS: version [F9 (2012/09/27 update)](https://www.gigabyte.com/Motherboard/GA-Z77-DS3H-rev-11#support-dl-bios)
 - Save & Exit > Load Optimized Defaults
 - Peripherals > SATA Mode Selection - AHCI
-- BIOS Features > Intel Virtualization Technology - Disabled (or add kernel flag [`dart=0`](https://github.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/issues/1) to `/Extra/org.chameleon.Boot.plist`)
+- BIOS Features > Intel Virtualization Technology - Disabled (or add kernel flag [`dart=0`](#1) to `CLOVER/config.plist`)
 - BIOS Features > VT-d - Disabled (or add kernel flag `dart=0`)
 
 Note: [Intel Virtualization Technology (VT-x)](http://en.wikipedia.org/wiki/X86_virtualization#Intel_virtualization_.28VT-x.29)
@@ -32,84 +34,195 @@ Sources:
 
 ## DSDT
 
-My tests (sleep, wake, shutdown...) have concluded that there is no need to generate a patched `DSDT.aml` file.
+See DSDT/PJALM/GA-Z77-DS3H.txt
+
+## Clover
 
 Sources:
-- [How to edit your own DSDT with MaciASL](http://www.macbreaker.com/2014/03/how-to-edit-your-own-dsdt-with-maciasl.html)
-- [Creating a DSDT using MaciASL](http://pjalm.com/forums/index.php?topic=3.0)
-- [Fork of MaciASL by RehabMan](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
-- [Gigabyte DSDT patches repository for MaciASL by PJALM](http://maciasl.sourceforge.net/pjalm/gigabyte/) ([available files](http://maciasl.sourceforge.net/pjalm/gigabyte/.maciasl))
+- [Ramblings of a Hackintosher - A (Sorta) Brief Vanilla Install Guide](https://www.reddit.com/r/hackintosh/comments/68p1e2/ramblings_of_a_hackintosher_a_sorta_brief_vanilla/)
+- [Clover Wiki](https://clover-wiki.zetam.org)
+- [2017/06/24 - My Main Hackintosh Desktop Sierra 10.12.5 Z77-DS3H](https://voiletdragon.wordpress.com/2017/06/24/guide-my-main-hackintosh-desktop-sierra-10-12-5-z77-ds3h/)
+- [GitHub VoiletDragon/Z77-DS3H-Clover-Hotpatch-Patches](https://github.com/VoiletDragon/Z77-DS3H-Clover-Hotpatch-Patches)
 
-## MultiBeast
+https://www.reddit.com/r/hackintosh/comments/7cuccm/gaz77xd3h_high_sierra_success/
 
-Using version 7.x
+### Create a bootable installer
 
-Beside defaults, check/uncheck:
-- Quick Start > DSDT Free
-- Drivers > Audio > Realtek ALCxxx > ALC887/888b Current
-- ~~Drivers > Disk > 3rd Party SATA~~
-- Drivers > Disk > TRIM Enabler (if you own a SSD disk with OS X < 10.10.4) / `sudo trimforce enable` (with OS X ≥ 10.10.4)
-- Drivers > Network > Atheros > AtherosE2200Ethernet (see [issue #6]( https://github.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/issues/6))
-- Customize > Boot Options > Verbose Boot (if you want to see what's going on at boot time)
-- Customize > System Definitions > iMac > iMac 12,2 (see [issue #2](https://github.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/issues/2))
+Becarefull, this will erase the disk
 
-Manually add kernel flag `UseMemDetect=No` to `/Extra/org.chameleon.Boot.plist` if "About This Mac" displays "0 MHz" for the memory.
+```
+diskutil list
+diskutil partitionDisk /dev/disk# GPT JHFS+ "USB" 100%
+```
 
-Sources:
-- [Success: Mountain Lion Gigabyte GA-Z77-DS3H, i5 3570k Ivy Bridge, 16GB](http://www.tonymacx86.com/user-builds/75407-success-mountain-lion-gigabyte-ga-z77-ds3h-i5-3570k-ivy-bridge-16gb.html)
-- [Loginfailed's Build - i7-3770k / GA-Z77-DS3H / 16GB RAM / 6850](http://www.tonymacx86.com/golden-builds/74578-loginfaileds-build-i7-3770k-ga-z77-ds3h-16gb-ram-6850-a.html)
-- [Gigabyte GA-Z77-DS3H Mac Install Guide](http://www.insanelymac.com/forum/topic/283293-gigabyte-ga-z77-ds3h-mac-install-guide/)
-- [Building a Hackintosh](http://www.savjee.be/2012/12/building-a-hackintosh/)
-- [Hackintosh: Z77-DS3H, i5-3570K, GTX 660 Ti](http://virtuallyhyper.com/2013/11/hackintosh-z77-ds3h-i5-3570k-gtx-660-ti/)
-- [Solution for Qualcomm Atheros AR816x, AR817x and Killer E220x](http://www.insanelymac.com/forum/topic/300056-solution-for-qualcomm-atheros-ar816x-ar817x-and-killer-e220x/)
-- [How to use Multibeast 7: a comprehensive guide for Yosemite](http://www.macbreaker.com/2014/11/how-to-use-multibeast-7-yosemite-guide.html)
+```
+open http://appstore.com/mac/macoshighsierra
+[...]
+sudo "/Applications/Install macOS High Sierra.app/Contents/Resources/createinstallmedia" --volume /Volumes/USB --applicationpath "/Applications/Install macOS High Sierra.app" --nointeraction
+```
 
-## iMac13,2 / SSDT
+- [How to create a bootable installer for macOS](https://support.apple.com/en-us/HT201372)
 
-If you have a Ivy Bridge processor you probably want to use [iMac13,2](https://github.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/issues/2) system definition instead of MacPro3,1 or iMac12,2. You will need to generate a SSDT for proper CPU power management (otherwise [Intel Turbo Boost](https://en.wikipedia.org/wiki/Intel_Turbo_Boost) won't work).
+### Clover Installer
 
-MultiBeast:
-- ~~Customize > Boot Options > Generate CPU States~~
-- Customize > System Definitions > iMac > iMac 13,2
+```
+curl -O https://netix.dl.sourceforge.net/project/cloverefiboot/Installer/Clover_v2.4k_r4617.zip
+unzip Clover_v2.4k_r4617.zip
+open Clover_v2.4k_r4617.pkg
+```
 
-SSDT generation:  
-Needs to be performed after system definition has been changed to iMac13,2 + a reboot
-```Shell
-curl -O https://raw.githubusercontent.com/Piker-Alpha/ssdtPRGen.sh/master/ssdtPRGen.sh
+- Change Install Location... > Install macOS High Sierra
+- Customize >
+  - [X] Install for UEFI booting only
+  - [X] Install Clover in the ESP
+  - Drivers64UEFI
+
+    Beside default drivers:
+    - [X] ApfsDriverLoader-64 (allows Clover to load APFS volumes thanks to apfs.efi)
+    - [X] AptioMemoryFix-64 (fixes memory problems with AMI UEFI BIOS Aptio)
+    - [X] VBoxHfs-64.efi (support for HFS+, not needed if using APFS)
+
+```
+diskutil eject EFI
+```
+
+### apfs.efi
+
+```
+# cp /usr/standalone/i386/apfs.efi /Volumes/EFI/EFI/CLOVER/drivers64UEFI
+open "/Applications/Install macOS High Sierra.app/Contents/SharedSupport/BaseSystem.dmg"
+cp "/Volumes/OS X Base System/usr/standalone/i386/apfs.efi" /Volumes/EFI/EFI/CLOVER/drivers64UEFI
+diskutil eject "OS X Base System"
+perl -i -pe 's|\x00\x74\x07\xb8\xff\xff|\x00\x90\x90\xb8\xff\xff|sg' /Volumes/EFI/EFI/CLOVER/drivers64UEFI/apfs.efi
+```
+
+- [Hackintosher 2018/03/19 - How-to update and patch apfs.efi on a Hackintosh](https://hackintosher.com/forums/thread/how-to-update-and-patch-apfs-efi-on-a-hackintosh.126/)
+- [GitHub corpnewt/APFS-Non-Verbose](https://github.com/corpnewt/APFS-Non-Verbose)
+- [GitHub JennyDavid/Apfs.efi-for-macOS-High-Sierra](https://github.com/JennyDavid/Apfs.efi-for-macOS-High-Sierra)
+
+### FakeSMC.kext
+
+```
+curl -OL https://bitbucket.org/RehabMan/os-x-fakesmc-kozlek/downloads/RehabMan-FakeSMC-2018-0403.zip
+unzip RehabMan-FakeSMC-2018-0403.zip -d FakeSMC
+cp -R FakeSMC/*.kext /Volumes/EFI/EFI/CLOVER/kexts/Other
+cp -R FakeSMC/HWMonitor.app /Applications
+```
+
+- [GitHub RehabMan/OS-X-FakeSMC-kozlek](https://github.com/RehabMan/OS-X-FakeSMC-kozlek)
+
+### AppleALC.kext and Lilu.kext
+
+```
+curl -OL https://github.com/acidanthera/AppleALC/releases/download/1.3.0/1.3.0.RELEASE.zip
+unzip 1.3.0.RELEASE.zip
+cp -R AppleALC.kext /Volumes/EFI/EFI/CLOVER/kexts/Other
+```
+
+```
+curl -OL https://github.com/acidanthera/Lilu/releases/download/1.2.5/1.2.5.RELEASE.zip
+unzip 1.2.5.RELEASE.zip
+cp -R Lilu.kext /Volumes/EFI/EFI/CLOVER/kexts/Other
+```
+
+- [GitHub acidanthera/AppleALC](https://github.com/acidanthera/AppleALC)
+
+### AtherosE2200Ethernet.kext
+
+[AtherosE2200Ethernet](https://github.com/Mieze/AtherosE2200Ethernet) is the most up to date and stable driver for Qualcomm Atheros AR8161 Ethernet controller
+
+```
+git clone https://github.com/Mieze/AtherosE2200Ethernet.git
+xcodebuild -project AtherosE2200Ethernet/AtherosE2200Ethernet.xcodeproj
+cp -R AtherosE2200Ethernet/build/Release/AtherosE2200Ethernet.kext /Volumes/EFI/EFI/CLOVER/kexts/Other
+```
+
+## SSDT
+
+For proper CPU power management, you should [generate a SSDT](#2) (otherwise [Intel Turbo Boost](https://en.wikipedia.org/wiki/Intel_Turbo_Boost) won't work).
+
+Clover config.plist parameter `PluginType` (supposed to enable CPU power management) did not work.
+
+```
+curl -O https://raw.githubusercontent.com/Piker-Alpha/ssdtPRGen.sh/Beta/ssdtPRGen.sh
 chmod +x ssdtPRGen.sh
-./ssdtPRGen.sh
+./ssdtPRGen.sh -m iMac13,2 -target 1 # 1 = Ivy Bridge
 [...]
-Do you want to copy ssdt.aml to /Extra/ssdt.aml? (y/n)? y
-[...]
-sudo reboot
+cp ~/Library/ssdtPRGen/ssdt.aml /Volumes/EFI/EFI/CLOVER/ACPI/patched/
 ```
 
 Sources:
-- [Native Ivy Bridge CPU and GPU Power Management](http://www.tonymacx86.com/mountain-lion-desktop-support/86807-ml-native-ivy-bridge-cpu-gpu-power-management.html)
+- [hackintosher.com 2017/11 - Generating a Coffee Lake SSDT on a Hackintosh](https://hackintosher.com/guides/generating-coffee-lake-ssdt-hackintosh/)
 - [ssdtPRGen.sh - Script to generate a SSDT for Power Management](https://github.com/Piker-Alpha/ssdtPRGen.sh)
-- [Documentation for Chimera's DropSSDT](http://www.tonymacx86.com/hp-probook-4530s/56487-documentation-chimeras-dropssdt.html)
+
+### config.plist
+
+```
+curl https://raw.githubusercontent.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/master/config.template.plist
+
+uuidgen
+
+curl -OL https://github.com/acidanthera/macserial/releases/download/2.0.2/macserial-2.0.2-mac.zip
+unzip macserial-2.0.2-mac.zip
+./macserial --generate | head -n 1 | awk '{print substr($0,0,12)}'
+| perl -pe 's|<string>000000000000</string>|$_|sg' < config.template.plist > config.plist
+
+plutil config.plist
+cp config.plist /Volumes/EFI/EFI/CLOVER
+```
+
+Sources:
+- [reddit 2015/06/30 - iMessage with Clover](https://www.reddit.com/r/hackintosh/comments/3bjxhl/dual_boot_issue_noob_question/csn8nfd)
+- [tonymac 2018/07/08 - An iDiot's Guide To iMessage](https://www.tonymacx86.com/threads/an-idiots-guide-to-imessage.196827/)
+- [tonymac 2017/05/23 - How to Fix iMessage](https://www.tonymacx86.com/threads/how-to-fix-imessage.110471/)
+- [tonymac 2015/10/20 - Clover DSDT Fixes](https://www.tonymacx86.com/threads/clover-dsdt-fixes.176195/)
 
 ## Performance
 
-Using [Geekbench](http://www.primatelabs.com/geekbench/), you should get a score (Intel Core i7-3770 @ 3.40 GHz) > 3000 (single-core) > 13000 (multi-core), see [issue #2](https://github.com/tkrotoff/Gigabyte-GA-Z77-DS3H-rev1.1-Hackintosh/issues/2).
+Using [Geekbench 4](http://www.primatelabs.com/geekbench/), you should get a score (Intel Core i7-3770 @ 3.40 GHz) > 4000 (single-core) > 14000 (multi-core), see issue #2.
+https://browser.geekbench.com/v4/cpu/9088039
+https://browser.geekbench.com/v4/cpu/9089562
+https://browser.geekbench.com/v4/cpu/9089632
 
-## Tricks
+## Tips
+
+### Mount EFI partition
+
+```
+diskutil list
+sudo diskutil mount /dev/disk#s1
+```
+
+### Logs
+
+Clover boot logs:
+```
+bdmesg
+```
+
+```
+git clone https://github.com/corpnewt/EssentialsList.git
+chmod +x EssentialsList/EssentialsList.command
+./EssentialsList/EssentialsList.command
+```
 
 ### Boot flags
 
-If the system does not boot (crash), flags `-v` (verbose), `-x` (safe mode), `-f` (ignore caches) and `-s` (single user mode - gives you a Unix shell) can help, see [Chameleon boot help](http://forge.voodooprojects.org/p/chameleon/source/tree/HEAD/trunk/doc/BootHelp.txt).
+If the system does not boot (crash), flags `-v` (verbose), `-x` (safe mode) and `-s` (single user mode - gives you a Unix shell) can help.
 
-### 4K Advanced Format hard disk
+Example with `/Volumes/EFI/EFI/CLOVER/config.plist`:
+```XML
+<key>Arguments</key>
+<string>dart=0 -v</string>
+```
 
-To boot on a [4K Advanced Format hard disk](http://en.wikipedia.org/wiki/Advanced_Format), check [How to fix the boot0 error for your Hackintosh](http://www.macbreaker.com/2012/02/hackintosh-boot0-error.html) and [boot0 Error: The Official Guide](http://www.tonymacx86.com/25-boot0-error-official-guide.html).
+Sources:
+- [Clover boot configuration](https://clover-wiki.zetam.org/Configuration/Boot).
+- [Hackintosh Boot Flags](http://www.fitzweekly.com/2016/04/hackintosh-boot-flags.html)
 
-### EBIOS read error
+### Prevent macOS from mounting a volume
 
-The "EBIOS read error" at boot time is provoked by a connected USB memory card reader, check [EBIOS read error: Error 0x31 Block 0x0 Sectors 0](http://www.tonymacx86.com/general-help/69139-ebios-read-error-error-0x31-block-0x0-sectors-0-a-2.html#post505858).
-
-### Prevent OS X from mounting a volume
-
-```Shell
+```
 sudo vifs
 ```
 
@@ -152,14 +265,8 @@ Sources:
 
 ## Other tools and links
 
-- /usr/sbin/bdmesg: displays Chameleon/Chimera boot messages
-- [HWMonitor/HWSensors](https://github.com/kozlek/HWSensors): display information from hardware sensors (requires MultiBeast Drivers > Misc > FakeSMC Plugins)
-- [AtherosE2200Ethernet](https://github.com/Mieze/AtherosE2200Ethernet): most up to date and stable driver for Qualcomm Atheros AR8161 Ethernet controller
-- [audio_RealtekALC](https://github.com/toleda/audio_RealtekALC): OS X Realtek ALC onboard audio with Chameleon/Chimera
-- [Chameleon project page](http://forge.voodooprojects.org/p/chameleon/)
 - [Clover EFI bootloader project page](http://sourceforge.net/projects/cloverefiboot/)
-- [DPCIManager](http://sourceforge.net/projects/dpcimanager/): list the PCI devices attached to your machine
-- [Chameleon Wizard](http://www.insanelymac.com/forum/topic/257464-chameleon-wizard-utility-for-chameleon): utility for Chameleon (closed source application)
+- [Clover Configurator](https://mackie100projects.altervista.org/clover-configurator/): graphical editor for Clover config.plist
 
 ## License
 
