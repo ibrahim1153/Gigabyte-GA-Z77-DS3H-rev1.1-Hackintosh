@@ -143,6 +143,7 @@ Sources:
 - [Chameleon project page](http://forge.voodooprojects.org/p/chameleon/)
 - [Clover EFI bootloader project page](http://sourceforge.net/projects/cloverefiboot/)
 - [DPCIManager](http://sourceforge.net/projects/dpcimanager/): list the PCI devices attached to your machine
+- [Motherboards Guide](http://motherboardinfo.com/): list of all motherboards. you can read reviews
 - [Chameleon Wizard](http://www.insanelymac.com/forum/topic/257464-chameleon-wizard-utility-for-chameleon): utility for Chameleon (closed source application)
 
 ## License
